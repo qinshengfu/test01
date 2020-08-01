@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qsf.druiddemo.mapper.ProductMapper">
+    <resultMap id="productMap" type="com.qsf.druiddemo.entity.Product">
+        <id column="id" property="id" />
+        <result column="product_name" property="productName" />
+        <result column="price" property="price" />
+        <result column="current_price" property="currentPrice" />
+        <result column="inventory" property="inventory" />
+        <association property="productImg" column="product_img_id"
+                     javaType="com.qsf.druiddemo.entity.ProductImg">
+            <id column="product_img_id" property="productImgId" />
+            <result column="img_addr" property="imgAddr" />
+            <result column="product_id" property="producId" />
+            <result column="crr" property="crr" />
+        </association>
+    </resultMap>
+    
+    <select id="queryProductById" resultMap="productMap">
+        select
+        p.id,
+        p.product_name,
+        p.price,
+        p.current_price,
+        p.inventory,
+        i.product_img_id,
+        i.img_addr
+        FROM
+        tb_product p
+        LEFT JOIN
+        tb_product_img i
+        on
+        p.id=i.product_id
+        where
+        p.id=#{id}
+        AND
+        i.img_addr=#{imgAddr}
+
+    </select>
+
+    <insert id="batchInsertProduct" parameterType="java.util.List">
+        INSERT INTO
+        tb_product(product_name,price,current_price,
+        inventory)
+        VALUES
+        <foreach collection="list" item="productImg" index="index"
+                 separator=",">
+            (
+            #{product.productName},
+            #{product.price},
+            #{product.currentPrice},
+            #{product.inventory}
+            )
+        </foreach>
+    </insert>
+
+</mapper>
